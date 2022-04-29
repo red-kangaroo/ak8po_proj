@@ -33,15 +33,18 @@ vývojář moci jednodušeji rozhodnout, který zdroj meteorologických dat bude
 
 ## Časový plán
 
+Tento časový plán bude průběžně doplňován o již využitou časovou dotaci na jednotlivé činnosti. Předložený časový plán 
+taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty aplikace dokončeny v termínu nebo s časovou rezervou.
+
 | Aktivita | Předpokládaná<br>časová náročnost<br>(hod) | Konečná<br>časová náročnost<br>(hod) | Nadpráce<br>(zbyde-li čas) |
 |----------|--------------------------------------------|--------------------------------------|---------------------------|
-| Plán požadavků a rozsahu prací | 1 | ... |
-| Rešerše zdrojů dat o počasí | 3 | ... |
-| Design architektury | 2 | ... |
-| Příprava prostředí | 1 | ... |
-| Databáze - struktura a zprovoznění | 3 | ... |
+| Plán požadavků a rozsahu prací | 1 | 1 |
+| Rešerše zdrojů dat o počasí | 3 | 2 |
+| Design architektury | 2 | 1 |
+| Příprava prostředí | 1 | 0,5+ |
+| Databáze - Struktura a zprovoznění | 3 | ... |
 | Backend - Připojení k databázi | 1 | ... |
-| Backend - Data scraping | 5 | ... |
+| Backend - Data scraping | 5 | 2+ |
 | Backend - Endpoint pro frontend | 1 | ... |
 | Frontend - Mockup v Grafaně | 2 | ... |
 | Frontend - Připojení k backendu | 2 | ... |
@@ -53,9 +56,6 @@ vývojář moci jednodušeji rozhodnout, který zdroj meteorologických dat bude
 | Nasazení v cloudu | 2 | ... | ANO
 | Uživatelská dokumentace | 2 | ... | ANO
 | **Celkem** | **37** (_47_) | ... |
-
-Předložený časový plán počítá s možností nadprací, pokud budou jednotlivé komponenty aplikace dokončeny v termínu nebo
-s časovou rezervou.
 
 ## Otázky
 
