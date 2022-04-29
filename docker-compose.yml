@@ -45,30 +45,30 @@ services:
   # ----------------------------
   # Frontend
   # ----------------------------
-  frontend:
-    image: frontend
-    build: ./frontend
-    container_name: frontend
-    restart: on-failure
-    ports:
-      - "8080:8080"
-    depends_on:
-      - backend
+#  frontend:
+#    image: frontend
+#    build: ./frontend
+#    container_name: frontend
+#    restart: on-failure
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - backend
 
   # ----------------------------
   # Backend
   # ----------------------------
-  backend:
-    image: backend
-    build: ./backend
-    container_name: backend
-    restart: on-failure
-    environment:
-      TODO: foo
-    ports:
-      - "8081:8080"
-    depends_on:
-      - database
+#  backend:
+#    image: backend
+#    build: ./backend
+#    container_name: backend
+#    restart: on-failure
+#    environment:
+#      TODO: foo
+#    ports:
+#      - "8081:8080"
+#    depends_on:
+#      - database
 
 # ####################################################################
 # Data persistence
