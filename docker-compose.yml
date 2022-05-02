@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#
+# Set up with:
+#  docker-compose up --build -d
 
 version: '3.6'
 
@@ -13,7 +16,8 @@ services:
   # Database (PostgreSQL)
   # ----------------------------
   database:
-    image: postgres
+    image: finduraf/ak8po_postgres:dev
+    build: ./db
     container_name: postgres
     restart: on-failure
     ports:
@@ -22,7 +26,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: 'root'
-      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_PASSWORD: 'ak8po'
       POSTGRES_DB: 'weather'
       # Timezone correction in Docker (Etc/UTC -> Europe/Prague)
       TZ: 'Europe/Prague'
@@ -41,12 +45,14 @@ services:
       PGADMIN_DEFAULT_PASSWORD: 'postgres'
       # Timezone correction in Docker (Etc/UTC -> Europe/Prague)
       TZ: 'Europe/Prague'
+      # If login doesn't work, try:
+      #  docker inspect postgres
 
   # ----------------------------
   # Frontend
   # ----------------------------
 #  frontend:
-#    image: frontend
+#    image: finduraf/ak8po_frontend:dev
 #    build: ./frontend
 #    container_name: frontend
 #    restart: on-failure
@@ -59,7 +65,7 @@ services:
   # Backend
   # ----------------------------
 #  backend:
-#    image: backend
+#    image: finduraf/ak8po_backend:dev
 #    build: ./backend
 #    container_name: backend
 #    restart: on-failure
