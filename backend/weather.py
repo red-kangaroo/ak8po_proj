@@ -1,10 +1,12 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from helper import set_logging
-import requests
+import datetime
 from pandas import DataFrame
+import requests
 from time import sleep
+
+from helper import set_logging, degrees_to_direction
 
 """
 AK8PO: Weather forecast
@@ -23,9 +25,12 @@ LOOP_FREQ = 60*60  # hourly
 REQ_URL = {
     "weatherapi": "http://api.weatherapi.com/v1/forecast.json?key={apikey}&q={loc}&days=7",
     "weatherstack": "http://api.weatherstack.com/forecast?access_key={apikey}&query={loc}&hourly=1&units=m",
-    # "NMI": "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={lat}&lon={lon}",
-    # "OWM": "http://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&units=metric&"
-    #        "exclude=minutely,hourly,daily&apikey={apikey}",
+    "nmi": "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={lat}&lon={lon}",
+    "owm": "http://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&units=metric&"
+           "exclude=minutely,daily&apikey={apikey}",
+}
+HEADER = {
+    "user-agent": f"ak8po_weather.utb.cz/{VERSION}"
 }
 CONFIG = {
     "name": "Zlín",
@@ -35,7 +40,7 @@ CONFIG = {
 KEYS = {
     "weatherapi": "a47efd9e3c124cfaab591725222904",
     "weatherstack": "25ce89cb473ddcb5fe3451dfa181abdf",
-    "OWM": "c1470bca69b7132296d1dd941137a152",
+    "owm": "c1470bca69b7132296d1dd941137a152",
 }
 
 # Database table columns:
@@ -180,75 +185,82 @@ class WeatherReader:
         table = DataFrame(data=out_data, index=index, columns=COLUMNS)
         return table
 
-    # def process_nmi(self, in_data: dict) -> DataFrame:
-    #     """Process data for Norwegian Meteorological Institute
-    #
-    #     :returns: DataFrame indexed by timestamp
-    #     """
-    #     ts = in_data['properties']['timeseries']
-    #     out_data = list()
-    #     index = list()
-    #
-    #     # Set time horizon for forecast, including timezone info from coordinates:
-    #     max_forecast = datetime.datetime.utcnow() + datetime.timedelta(hours=float(self.config.horizon))
-    #     max_forecast = max_forecast.replace(tzinfo=pytz.utc)
-    #
-    #     for dataset in ts:
-    #         try:
-    #             time_ndx = self.verify_timestamp(dataset['time'])
-    #         except Exception as e:
-    #             self.logger.warning(f"Could not verify timestamp: {e}")
-    #             continue
-    #
-    #         if time_ndx >= max_forecast:
-    #             break  # We want to limit forecast within given time horizon.
-    #         index.append(time_ndx)
-    #
-    #         try:
-    #             samples = dataset['data']['instant']['details']
-    #         except Exception as e:
-    #             self.logger.warning(f"Could not read samples: {e}")
-    #             continue
-    #
-    #         # Get all needed values:
-    #         air_temp = samples['air_temperature']
-    #         cloud_area = samples['cloud_area_fraction']
-    #         wind_dir = samples['wind_from_direction']
-    #         wind_speed = samples['wind_speed']
-    #         humidity = samples['relative_humidity']
-    #
-    #         # Calculate irradiation from relative cloud area:
-    #         try:
-    #             altitude = in_data['geometry']['coordinates'][2]
-    #             irradiation = self.get_irradiation(altitude, cloud_area, time_ndx)
-    #         except Exception as e:
-    #             self.logger.error(f"Failed to calculate irradiation: {e}")
-    #             irradiation = 0.0
-    #
-    #         # Precipitation is always for the next hour, i.e. the value means "from now till the next our"
-    #         try:
-    #             precipitation = dataset['data']['next_1_hours']['details']['precipitation_amount']
-    #         except KeyError:
-    #             precipitation = 0.0
-    #         except Exception as e:
-    #             self.logger.warning(f"Precipitation not found: {e}")
-    #             precipitation = None
-    #
-    #         # Add the data into the dataset
-    #         out_data.append([air_temp, humidity, cloud_area, wind_speed, wind_dir, precipitation, irradiation])
-    #
-    #     table = DataFrame(data=out_data, index=index, columns=COLUMNS)
-    #     return table
-    #
-    # def process_owm(self, in_data: dict) -> DataFrame:
-    #     """Process data for OpenWeatherMap
-    #
-    #     :returns: DataFrame indexed by timestamp
-    #     """
-    #     # TODO
-    #
-    #     table = DataFrame()
-    #     return table
+    def process_nmi(self, in_data: dict) -> DataFrame:
+        """Process data for Norwegian Meteorological Institute
+
+        :returns: DataFrame indexed by timestamp
+        """
+        source = "nmi"
+        ts = in_data['properties']['timeseries']
+        out_data = list()
+        index = list()
+
+        for dataset in ts:
+            index.append(dataset['time'])
+
+            try:
+                samples = dataset['data']['instant']['details']
+            except Exception as e:
+                self.logger.warning(f"Could not read samples: {e}")
+                continue
+
+            # Get all needed values:
+            air_temp = samples['air_temperature']
+            air_pressure = samples['air_pressure_at_sea_level']
+            cloud_area = samples['cloud_area_fraction']
+            wind_dir = degrees_to_direction(int(samples['wind_from_direction']))
+            wind_speed = samples['wind_speed']
+            humidity = samples['relative_humidity']
+
+            # Precipitation is always for the next hour, i.e. the value means "from now till the next our"
+            try:
+                precipitation = dataset['data']['next_1_hours']['details']['precipitation_amount']
+            except KeyError:
+                precipitation = 0.0
+            except Exception as e:
+                self.logger.warning(f"Precipitation not found: {e}")
+                precipitation = None
+
+            # Add the data into the dataset
+            out_data.append([source, air_temp, humidity, cloud_area, wind_speed, wind_dir, precipitation,
+                             air_pressure, None, None])  # Last two are chance of rain and snow.
+
+        table = DataFrame(data=out_data, index=index, columns=COLUMNS)
+        return table
+
+    @staticmethod
+    def process_owm(in_data: dict) -> DataFrame:
+        """Process data for OpenWeatherMap
+
+        :returns: DataFrame indexed by timestamp
+        """
+        source = "owm"
+        hour_data = in_data['hourly']
+        out_data = list()
+        index = list()
+
+        for h in hour_data:
+            index.append(datetime.datetime.fromtimestamp(h['dt']))
+
+            new_row = list()
+            new_row.append(source)
+            new_row.append(h['temp'])
+            new_row.append(h['humidity'])
+            new_row.append(h['clouds'])
+            new_row.append(h['wind_speed'])
+            new_row.append(degrees_to_direction(int(h['wind_deg'])))
+            try:
+                new_row.append(h['rain']['1h'])
+            except KeyError:
+                new_row.append(None)
+            new_row.append(h['pressure'])
+            new_row.append(None)  # chance_of_rain
+            new_row.append(None)  # chance_of_snow
+
+            out_data.append(new_row)
+
+        table = DataFrame(data=out_data, index=index, columns=COLUMNS)
+        return table
 
     def call_api(self, source: str) -> dict:
         """Request data from source
@@ -269,7 +281,7 @@ class WeatherReader:
             url = url.replace('{apikey}', KEYS.get(source, ""))
 
         self.logger.debug(f'Calling the API: {url}')
-        response = requests.get(url)
+        response = requests.get(url, headers=HEADER)
         if response.status_code != 200:
             self.logger.warning(f"Request failed when contacting {source} forecast API: {response.reason}")
             return out_data
@@ -288,7 +300,7 @@ if __name__ == "__main__":
         wr = WeatherReader(name, logger)
         # TODO
         data = wr.get_data()
-        wr.set_data('weatherstack', data)
+        wr.set_data('nmi', data)
         print(data)
         # wr.main_loop()
     except Exception as ex:
