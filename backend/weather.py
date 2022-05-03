@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import os
 from pandas import DataFrame
 import requests
+import sqlalchemy
+from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy import Column, TIMESTAMP, VARCHAR, REAL
 from time import sleep
 
-from helper import set_logging, degrees_to_direction
+from helper import set_logging, degrees_to_direction, ROOT
 
 """
 AK8PO: Weather forecast
@@ -15,7 +19,7 @@ AK8PO: Weather forecast
 """
 
 # Software version:
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 # Logging level:
 LOG_LVL = 'DEBUG'
 # Frequency of checking forecast (seconds):
@@ -44,28 +48,90 @@ KEYS = {
 }
 
 # Database table columns:
-COLUMNS = ['source', 'temperature', 'humidity', 'cloud_fraction', 'wind_speed', 'wind_dir', 'precipitations',
+COLUMNS = ['datasource', 'temperature', 'humidity', 'cloud_fraction', 'wind_speed', 'wind_dir', 'precipitations',
            'pressure', 'chance_rain', 'chance_snow']
+
+# Database connection string (DBtype[+driver]://user:pwd@server/cat):
+DB_USER = os.environ.get("AK8PO_USER", "ak8po")
+DB_PWD = os.environ.get("AK8PO_PWD", "ak8po")
+DB_HOST = os.environ.get("AK8PO_HOST", "localhost")
+DB_NAME = os.environ.get("AK8PO_NAME", "weather")
+DB_CON_STR = f"postgresql://{DB_USER}:{DB_PWD}@{DB_HOST}/{DB_NAME}"
+DB_TABLE = "weather_data"
+# Wait period for postgres in container to start
+WAIT_FOR_DATABASE = 10
+# Metadata for database structure:
+Base = declarative_base()
+# Database connection:
+SQL = None
+DB_ENG = None
 
 
 # ==============================================================================
-# Functionality
+# Database
+# ==============================================================================
+# class WeatherTable(Base):
+#     # Tabulka se souhrnnymi daty za jednotlive roky
+#     __tablename__ = DB_TABLE
+#
+#     forecast_time = Column(TIMESTAMP, nullable=False)
+#     datasource = Column(VARCHAR(20), nullable=False)
+#     temperature = Column(REAL)
+#     humidity = Column(REAL)
+#     cloud_fraction = Column(REAL)
+#     wind_speed = Column(REAL)
+#     wind_dir = Column(VARCHAR(4))
+#     precipitations = Column(REAL)
+#     pressure = Column(REAL)
+#     chance_rain = Column(REAL)
+#     chance_snow = Column(REAL)
+
+
+def open_session():
+    global SQL, DB_ENG
+
+    try:
+        engine = sqlalchemy.create_engine(DB_CON_STR)
+        Session = sqlalchemy.orm.sessionmaker(bind=engine)
+        session = Session()
+
+        DB_ENG = engine
+        SQL = session
+    except Exception as e:
+        if ROOT is not None:
+            ROOT.error(f"Failed to establish SQL connection: {e}")
+        else:
+            print(e)
+
+
+def close_session():
+    global SQL, DB_ENG
+
+    if SQL is None and DB_ENG is None:
+        return
+    else:
+        try:
+            engine = SQL.get_bind()
+            SQL.close()
+            engine.dispose()
+        except Exception as e:
+            if ROOT is not None:
+                ROOT.error(f"Failed to relinquish SQL connection: {e}")
+            else:
+                print(e)
+
+    DB_ENG = None
+    SQL = None
+
+
+# ==============================================================================
+# Forecast
 # ==============================================================================
 class WeatherReader:
     def __init__(self, w_name, w_logger):
         self.name = w_name
         self.logger = w_logger
         self.logger.info(f"Weather forecast reader version {VERSION} is starting...")
-
-        # Create database connection:
-        # self.db = Database(
-        #     host=self.config.db_host,
-        #     user=self.config.get('db_user'),
-        #     pwd=self.config.get('db_password'),
-        #     cat=self.config.db_cat,
-        #     log=self.logger
-        # )
-
         self.loop = True
 
     def main_loop(self):
@@ -75,12 +141,18 @@ class WeatherReader:
         """
         try:
             while self.loop:
-                # TODO
-                in_data = self.get_data()
+                ok = True
 
-                for s in in_data.keys():
-                    self.set_data(s, in_data[s])
+                try:
+                    in_data = self.get_data()
 
+                    for s in in_data.keys():
+                        ok &= self.set_data(s, in_data[s])
+                except Exception as e:
+                    self.logger.error(f"Failed a forecast gathering cycle: {e}")
+
+                if not ok:
+                    self.logger.warning("Forecast gathering had some problems.")
                 sleep(LOOP_FREQ)
         except KeyboardInterrupt:
             self.loop = False
@@ -107,18 +179,34 @@ class WeatherReader:
 
         Processes data for each source, then writes them to database.
         """
-        ok = True
-        self.logger.info("Writing data...")
+        global SQL, DB_ENG, DB_TABLE
 
+        self.logger.info("Writing data...")
         # Call specific processing method for each source:
         try:
-            table = getattr(self, f"process_{source.lower()}")(in_data[source.lower()])
+            table: DataFrame = getattr(self, f"process_{source.lower()}")(in_data[source.lower()])
         except Exception as e:
             self.logger.error(f"Could not process data for source {source}: {e}")
             return False
 
         # Write to database:
-        self.db.set(self.config.db_measurement, table)
+        open_session()
+        if SQL is None:
+            self.logger.error("No SQL connection available.")
+            return False
+
+        try:
+            ok = table.to_sql(DB_TABLE, DB_ENG, if_exists='append', index_label='forecast_time')  # INSERT
+            # Returns True if the INSERT affected the same number of rows as are found in the DataFrame. Otherwise some
+            # data were likely missed/dropped, so return False.
+            ok = ok == len(table.index)
+        except Exception as e:
+            ok = False
+            self.logger.error(f"Could not write data to SQL: {e}")
+
+        close_session()
+        if SQL is not None:
+            self.logger.warning("SQL connection not closed properly.")
 
         return ok
 

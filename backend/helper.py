@@ -10,6 +10,9 @@ AK8PO: Helper functions
 @author: Filip Findura
 """
 
+# Logging root handler:
+ROOT = None
+
 
 def set_logging(name: str, level: str) -> log.Logger:
     """Set up attributes of the root logger
@@ -17,6 +20,7 @@ def set_logging(name: str, level: str) -> log.Logger:
     :param name: string name of the logger
     :param level: string name of base log level
     """
+    global ROOT
     log_format = "%(asctime)s | %(levelname)-5s | %(message)s"
     if level == "DEBUG":
         log_format += " | %(filename)s@ln%(lineno)d"
@@ -28,6 +32,7 @@ def set_logging(name: str, level: str) -> log.Logger:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
+    ROOT = logger
     return logger
 
 

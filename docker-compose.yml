@@ -64,17 +64,17 @@ services:
   # ----------------------------
   # Backend
   # ----------------------------
-#  backend:
-#    image: finduraf/ak8po_backend:dev
-#    build: ./backend
-#    container_name: backend
-#    restart: on-failure
-#    environment:
-#      TODO: foo
-#    ports:
-#      - "8081:8080"
-#    depends_on:
-#      - database
+  backend:
+    image: finduraf/ak8po_backend:dev
+    build: ./backend
+    container_name: backend
+    restart: on-failure
+    environment:
+      AK8PO_HOST: 'postgres'
+    ports:
+      - "8081:8080"
+    depends_on:
+      - database
 
 # ####################################################################
 # Data persistence
