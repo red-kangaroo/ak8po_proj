@@ -39,23 +39,23 @@ taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty ap
 | Aktivita | Předpokládaná<br>časová náročnost<br>(hod) | Konečná<br>časová náročnost<br>(hod) | Nadpráce<br>(zbyde-li čas) |
 |----------|--------------------------------------------|--------------------------------------|---------------------------|
 | Plán požadavků a rozsahu prací | 1 | 1 |
-| Rešerše zdrojů dat o počasí | 3 | 2 |
+| Rešerše zdrojů dat o počasí | 3 | 2,5 |
 | Design architektury | 2 | 1 |
-| Příprava prostředí | 1 | 0,5+ |
-| Databáze - Struktura a zprovoznění | 3 | ... |
-| Backend - Připojení k databázi | 1 | ... |
-| Backend - Data scraping | 5 | 2+ |
+| Příprava prostředí | 1 | 0,5 |
+| Databáze - Struktura a zprovoznění | 3 | 1,5 |
+| Backend - Připojení k databázi | 1 | 1,5 |
+| Backend - Data scraping | 5 | 5 |
 | Backend - Endpoint pro frontend | 1 | ... |
-| Frontend - Mockup v Grafaně | 2 | ... |
+| Frontend - Mockup v Grafaně | 2 | 0,5+ |
 | Frontend - Připojení k backendu | 2 | ... |
 | Frontend - Vizualizace v grafech | 10 | ... |
 | Frontend - Vizualizace na mapě | 6 | ... | ANO
 | Testy aplikace - Unit testy | 3 | ... |
-| Testy aplikace - Integrační testy | 2 | ... |
+| Testy aplikace - Integrační testy | 2 | 1+ |
 | Testy aplikace - Uživatelské testy | 1 | ... |
 | Nasazení v cloudu | 2 | ... | ANO
 | Uživatelská dokumentace | 2 | ... | ANO
-| **Celkem** | **37** (_47_) | ... |
+| **Celkem** | **37** (_47_) | 14,5 |
 
 ## Otázky
 
