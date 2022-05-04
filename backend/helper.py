@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging as log
+from sqlalchemy.dialects.postgresql import insert
 import sys
 
 """
@@ -77,3 +78,15 @@ def degrees_to_direction(deg: int) -> str:
         compass = "N"
 
     return compass
+
+
+def insert_on_duplicate(table, conn, keys, data_iter):
+    """Insert ignoring duplicates
+
+    This should work for Postgres and do nothing if there's a conflict with the primary key (index_elements).
+
+    See: https://stackoverflow.com/questions/30337394/pandas-to-sql-fails-on-duplicate-primary-key
+    """
+    insert_stmt = insert(table.table).values(list(data_iter))
+    do_nothing_stmt = insert_stmt.on_conflict_do_nothing(index_elements=['forecast_time', 'datasource'])
+    conn.execute(do_nothing_stmt)

@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS weather_data(
         precipitations real null,
         pressure real null,
         chance_rain real null,
-        chance_snow real null
+        chance_snow real null,
+        PRIMARY KEY (forecast_time, datasource)
       );
 DELETE FROM weather_data;
 

@@ -10,7 +10,7 @@ from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy import Column, TIMESTAMP, VARCHAR, REAL
 from time import sleep
 
-from helper import set_logging, degrees_to_direction, ROOT
+from helper import set_logging, degrees_to_direction, insert_on_duplicate, ROOT
 
 """
 AK8PO: Weather forecast
@@ -19,7 +19,7 @@ AK8PO: Weather forecast
 """
 
 # Software version:
-VERSION = '0.2.1'
+VERSION = '0.2.2'
 # Logging level:
 LOG_LVL = 'INFO'
 # Frequency of checking forecast (seconds):
@@ -65,6 +65,9 @@ Base = declarative_base()
 # Database connection:
 SQL = None
 DB_ENG = None
+
+# Unit conversion:
+MPS_TO_KPH = 3.6
 
 
 # ==============================================================================
@@ -214,7 +217,8 @@ class WeatherReader:
             return False
 
         try:
-            ok = table.to_sql(DB_TABLE, DB_ENG, if_exists='append', index_label='forecast_time')  # INSERT
+            ok = table.to_sql(DB_TABLE, DB_ENG, if_exists='append', index_label='forecast_time',
+                              method=insert_on_duplicate)  # INSERT
             # Returns True if the INSERT affected the same number of rows as are found in the DataFrame. Otherwise some
             # data were likely missed/dropped, so return False.
             ok = ok == len(table.index)
@@ -317,7 +321,7 @@ class WeatherReader:
             air_pressure = samples['air_pressure_at_sea_level']
             cloud_area = samples['cloud_area_fraction']
             wind_dir = degrees_to_direction(int(samples['wind_from_direction']))
-            wind_speed = samples['wind_speed']
+            wind_speed = samples['wind_speed'] * MPS_TO_KPH
             humidity = samples['relative_humidity']
 
             # Precipitation is always for the next hour, i.e. the value means "from now till the next our"
@@ -355,7 +359,7 @@ class WeatherReader:
                 new_row.append(h['temp'])
                 new_row.append(h['humidity'])
                 new_row.append(h['clouds'])
-                new_row.append(h['wind_speed'])
+                new_row.append(h['wind_speed'] * MPS_TO_KPH)
                 new_row.append(degrees_to_direction(int(h['wind_deg'])))
                 try:
                     new_row.append(h['rain']['1h'])
@@ -411,4 +415,4 @@ if __name__ == "__main__":
         wr = WeatherReader(name, logger)
         wr.main_loop()
     except Exception as ex:
-        logger.critical(f'Service terminated on error: {ex}')
+        logger.critical(f"Service terminated on error: {ex}")
