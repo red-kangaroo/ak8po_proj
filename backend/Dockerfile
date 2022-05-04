@@ -1,7 +1,7 @@
 # Weather forecast
 #
 # Build with:
-#   docker build -t ak8po_weather:<version>
+#   docker build -t ak8po_backend:<version>
 FROM python:3.8-slim
 
 ADD . /

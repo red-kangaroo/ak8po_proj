@@ -13,3 +13,16 @@ CREATE TABLE IF NOT EXISTS weather_data(
         chance_snow real null
       );
 DELETE FROM weather_data;
+
+DROP ROLE IF EXISTS ak8po;
+CREATE ROLE ak8po WITH
+  LOGIN
+  NOSUPERUSER
+  INHERIT
+  NOCREATEDB
+  NOCREATEROLE
+  NOREPLICATION
+  ENCRYPTED PASSWORD 'md5caf27c6a8890c201031c91036dd7a80e';
+GRANT pg_read_all_settings, pg_read_all_stats, pg_read_server_files, pg_write_server_files TO ak8po;
+
+ALTER TABLE weather_data OWNER TO ak8po;

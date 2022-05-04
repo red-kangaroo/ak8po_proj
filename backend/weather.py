@@ -19,9 +19,9 @@ AK8PO: Weather forecast
 """
 
 # Software version:
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 # Logging level:
-LOG_LVL = 'DEBUG'
+LOG_LVL = 'INFO'
 # Frequency of checking forecast (seconds):
 LOOP_FREQ = 60*60  # hourly
 
@@ -202,7 +202,7 @@ class WeatherReader:
 
         # Call specific processing method for each source:
         try:
-            table: DataFrame = getattr(self, f"process_{source.lower()}")(in_data[source.lower()])
+            table: DataFrame = getattr(self, f"process_{source.lower()}")(in_data)
         except Exception as e:
             self.logger.error(f"Could not process data for source {source}: {e}")
             return False
