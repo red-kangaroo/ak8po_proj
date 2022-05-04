@@ -61,6 +61,20 @@ services:
 #    depends_on:
 #      - backend
 
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: on-failure
+    depends_on:
+      - database
+    ports:
+      - "5052:3000"
+    volumes:
+      - grafanadata:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: 'admin'
+      GF_SECURITY_ADMIN_PASSWORD: 'ak8po'
+
   # ----------------------------
   # Backend
   # ----------------------------
@@ -71,8 +85,8 @@ services:
     restart: on-failure
     environment:
       AK8PO_HOST: 'postgres'
-    ports:
-      - "8081:8080"
+#    ports:
+#      - "8081:8080"
     depends_on:
       - database
 
@@ -85,4 +99,7 @@ volumes:
   pgdata:
     driver: local
   pgadmindata:
+    driver: local
+  # Visualisation
+  grafanadata:
     driver: local
