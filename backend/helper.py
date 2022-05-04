@@ -14,6 +14,9 @@ AK8PO: Helper functions
 ROOT = None
 
 
+# ==============================================================================
+# Helpers
+# ==============================================================================
 def set_logging(name: str, level: str) -> log.Logger:
     """Set up attributes of the root logger
 
@@ -37,6 +40,7 @@ def set_logging(name: str, level: str) -> log.Logger:
 
 
 def degrees_to_direction(deg: int) -> str:
+    # TODO: This is ugly.
     if deg > 348:
         compass = "N"
     elif deg > 326:

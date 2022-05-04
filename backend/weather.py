@@ -41,7 +41,7 @@ CONFIG = {
     "lat": "49.22645",
     "lon": "17.67065",
 }
-KEYS = {
+KEYS = {  # TODO
     "weatherapi": "a47efd9e3c124cfaab591725222904",
     "weatherstack": "25ce89cb473ddcb5fe3451dfa181abdf",
     "owm": "c1470bca69b7132296d1dd941137a152",
@@ -131,6 +131,7 @@ class WeatherReader:
     def __init__(self, w_name, w_logger):
         self.name = w_name
         self.logger = w_logger
+
         self.logger.info(f"Weather forecast reader version {VERSION} is starting...")
         self.loop = True
 
@@ -139,21 +140,37 @@ class WeatherReader:
 
         Ends on Ctrl+C.
         """
+        # Let Postgres start before we do anything rash:
+        sleep(WAIT_FOR_DATABASE)
+
         try:
             while self.loop:
                 ok = True
 
                 try:
+                    time_start = datetime.datetime.now()
+
+                    self.logger.info("Reading data...")
                     in_data = self.get_data()
 
+                    self.logger.info("Writing data...")
                     for s in in_data.keys():
-                        ok &= self.set_data(s, in_data[s])
+                        try:
+                            ok &= self.set_data(s, in_data[s])
+                        except Exception as e:
+                            self.logger.error(f"Unhandled exception when writing data: {e}")
+
+                    time_elapsed = datetime.datetime.now() - time_start
+                    self.logger.info(f"Finished forecast scraping in {time_elapsed.total_seconds():.3f} seconds.")
                 except Exception as e:
                     self.logger.error(f"Failed a forecast gathering cycle: {e}")
 
                 if not ok:
                     self.logger.warning("Forecast gathering had some problems.")
+
+                # Sleep until the next cycle:
                 sleep(LOOP_FREQ)
+
         except KeyboardInterrupt:
             self.loop = False
 
@@ -166,11 +183,13 @@ class WeatherReader:
 
         :returns: dict(source str: data dict)
         """
-        self.logger.info("Reading data...")
         in_data = dict()
 
         for source in REQ_URL.keys():
-            in_data[source] = self.call_api(source)
+            try:
+                in_data[source] = self.call_api(source)
+            except Exception as e:
+                self.logger.error(f"Failed to read from source {source}: {e}")
 
         return in_data
 
@@ -181,7 +200,6 @@ class WeatherReader:
         """
         global SQL, DB_ENG, DB_TABLE
 
-        self.logger.info("Writing data...")
         # Call specific processing method for each source:
         try:
             table: DataFrame = getattr(self, f"process_{source.lower()}")(in_data[source.lower()])
@@ -210,8 +228,7 @@ class WeatherReader:
 
         return ok
 
-    @staticmethod
-    def process_weatherapi(in_data: dict) -> DataFrame:
+    def process_weatherapi(self, in_data: dict) -> DataFrame:
         """Process data for Weather API
 
         :returns: DataFrame indexed by timestamp
@@ -223,22 +240,25 @@ class WeatherReader:
 
         for d in day_data:
             for h in d['hour']:
-                index.append(h['time'])
+                try:
+                    index.append(h['time'])
 
-                new_row = list()
-                new_row.append(source)
-                # new_row.append(h['time'])
-                new_row.append(h['temp_c'])
-                new_row.append(h['humidity'])
-                new_row.append(h['cloud'])
-                new_row.append(h['wind_kph'])
-                new_row.append(h['wind_dir'])
-                new_row.append(h['precip_mm'])
-                new_row.append(h['pressure_mb'])
-                new_row.append(h['chance_of_rain'])
-                new_row.append(h['chance_of_snow'])
+                    new_row = list()
+                    new_row.append(source)
+                    # new_row.append(h['time'])
+                    new_row.append(h['temp_c'])
+                    new_row.append(h['humidity'])
+                    new_row.append(h['cloud'])
+                    new_row.append(h['wind_kph'])
+                    new_row.append(h['wind_dir'])
+                    new_row.append(h['precip_mm'])
+                    new_row.append(h['pressure_mb'])
+                    new_row.append(h['chance_of_rain'])
+                    new_row.append(h['chance_of_snow'])
 
-                out_data.append(new_row)
+                    out_data.append(new_row)
+                except Exception as e:
+                    self.logger.warning(f"Could not add a new row for {source}: {e}")
 
         table = DataFrame(data=out_data, index=index, columns=COLUMNS)
         return table
@@ -316,8 +336,7 @@ class WeatherReader:
         table = DataFrame(data=out_data, index=index, columns=COLUMNS)
         return table
 
-    @staticmethod
-    def process_owm(in_data: dict) -> DataFrame:
+    def process_owm(self, in_data: dict) -> DataFrame:
         """Process data for OpenWeatherMap
 
         :returns: DataFrame indexed by timestamp
@@ -328,24 +347,27 @@ class WeatherReader:
         index = list()
 
         for h in hour_data:
-            index.append(datetime.datetime.fromtimestamp(h['dt']))
-
-            new_row = list()
-            new_row.append(source)
-            new_row.append(h['temp'])
-            new_row.append(h['humidity'])
-            new_row.append(h['clouds'])
-            new_row.append(h['wind_speed'])
-            new_row.append(degrees_to_direction(int(h['wind_deg'])))
             try:
-                new_row.append(h['rain']['1h'])
-            except KeyError:
-                new_row.append(None)
-            new_row.append(h['pressure'])
-            new_row.append(None)  # chance_of_rain
-            new_row.append(None)  # chance_of_snow
+                index.append(datetime.datetime.fromtimestamp(h['dt']))
 
-            out_data.append(new_row)
+                new_row = list()
+                new_row.append(source)
+                new_row.append(h['temp'])
+                new_row.append(h['humidity'])
+                new_row.append(h['clouds'])
+                new_row.append(h['wind_speed'])
+                new_row.append(degrees_to_direction(int(h['wind_deg'])))
+                try:
+                    new_row.append(h['rain']['1h'])
+                except KeyError:
+                    new_row.append(None)
+                new_row.append(h['pressure'])
+                new_row.append(None)  # chance_of_rain
+                new_row.append(None)  # chance_of_snow
+
+                out_data.append(new_row)
+            except Exception as e:
+                self.logger.warning(f"Could not add a new row for {source}: {e}")
 
         table = DataFrame(data=out_data, index=index, columns=COLUMNS)
         return table
@@ -384,12 +406,9 @@ class WeatherReader:
 if __name__ == "__main__":
     name = "weather"
     logger = set_logging(name, LOG_LVL)
+
     try:
         wr = WeatherReader(name, logger)
-        # TODO
-        data = wr.get_data()
-        wr.set_data('nmi', data)
-        print(data)
-        # wr.main_loop()
+        wr.main_loop()
     except Exception as ex:
         logger.critical(f'Service terminated on error: {ex}')
