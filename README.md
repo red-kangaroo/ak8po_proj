@@ -28,7 +28,8 @@ vývojář moci jednodušeji rozhodnout, který zdroj meteorologických dat bude
   * Django (frontend framework)
 * Docker (kontejnerizační platforma pro nasazení)
 * PostgreSQL (relační databáze)
-* Grafana (mockup frontendu pro ověření konceptu)
+* [Grafana](https://grafana.com/) (mockup frontendu pro ověření konceptu)
+* [OpenStreetMap](https://www.openstreetmap.org/) (vizualizace v mapě)
 * [Clockify](https://app.clockify.me/) (vyhodnocení časové náročnosti plán vs skutečnost)
 
 ## Časový plán
@@ -39,23 +40,23 @@ taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty ap
 | Aktivita | Předpokládaná<br>časová náročnost<br>(hod) | Konečná<br>časová náročnost<br>(hod) | Nadpráce<br>(zbyde-li čas) |
 |----------|--------------------------------------------|--------------------------------------|---------------------------|
 | Plán požadavků a rozsahu prací | 1 | 1 |
-| Rešerše zdrojů dat o počasí | 3 | 2,5 |
+| Rešerše zdrojů dat | 3 | 2,5 |
 | Design architektury | 2 | 1 |
 | Příprava prostředí | 1 | 0,5 |
 | Databáze - Struktura a zprovoznění | 3 | 1,5 |
 | Backend - Připojení k databázi | 1 | 1,5 |
 | Backend - Data scraping | 5 | 5 |
 | Backend - Endpoint pro frontend | 1 | ... |
-| Frontend - Mockup v Grafaně | 2 | 0,5+ |
+| Frontend - Mockup v Grafaně | 2 | 2 |
 | Frontend - Připojení k backendu | 2 | ... |
 | Frontend - Vizualizace v grafech | 10 | ... |
-| Frontend - Vizualizace na mapě | 6 | ... | ANO
-| Testy aplikace - Unit testy | 3 | ... |
-| Testy aplikace - Integrační testy | 2 | 1+ |
-| Testy aplikace - Uživatelské testy | 1 | ... |
+| Frontend - Vizualizace na mapě | 7 | ... | ANO
+| Testy aplikace - Unit testy a debugging | 2 | 1+ |
+| Testy aplikace - Integrační a aplikační testy | 2 | ... |
 | Nasazení v cloudu | 2 | ... | ANO
+| Uživatelská konzultace | 1 | ... |
 | Uživatelská dokumentace | 2 | ... | ANO
-| **Celkem** | **37** (_47_) | 14,5 |
+| **Celkem** | **36** (_47_) | 16 |
 
 ## Otázky
 

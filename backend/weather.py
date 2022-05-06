@@ -168,8 +168,8 @@ class WeatherReader:
                 except Exception as e:
                     self.logger.error(f"Failed a forecast gathering cycle: {e}")
 
-                if not ok:
-                    self.logger.warning("Forecast gathering had some problems.")
+                # if not ok:
+                #     self.logger.warning("Forecast gathering had some problems.")
 
                 # Sleep until the next cycle:
                 sleep(LOOP_FREQ)
@@ -277,7 +277,7 @@ class WeatherReader:
         day_data = in_data['current']
         out_data = list()
         index = list()
-        index.append(in_data['location']['localtime'])
+        index.append(in_data['location']['localtime'])  # TODO: Round to nearest hour.
 
         new_row = list()
         new_row.append(source)
