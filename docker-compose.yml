@@ -51,15 +51,20 @@ services:
   # ----------------------------
   # Frontend
   # ----------------------------
-#  frontend:
-#    image: finduraf/ak8po_frontend:dev
-#    build: ./frontend
-#    container_name: frontend
-#    restart: on-failure
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - backend
+  frontend:
+    image: finduraf/ak8po_frontend:dev
+    build: ./frontend
+    container_name: frontend
+    restart: on-failure
+    ports:
+      - "8081:8000"
+    environment:
+      POSTGRES_NAME: 'postgres'
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'ak8po'
+    depends_on:
+      - backend
+      - database
 
   grafana:
     image: grafana/grafana
@@ -85,8 +90,6 @@ services:
     restart: on-failure
     environment:
       AK8PO_HOST: 'postgres'
-#    ports:
-#      - "8081:8080"
     depends_on:
       - database
 

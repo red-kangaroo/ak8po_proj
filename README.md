@@ -54,7 +54,7 @@ taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty ap
 | Testy aplikace - Unit testy a debugging | 2 | 1+ |
 | Testy aplikace - Integrační a aplikační testy | 2 | ... |
 | Nasazení v cloudu | 2 | ... | ANO
-| Uživatelská konzultace | 1 | ... |
+| Uživatelské konzultace | 1 | 0,5 |
 | Uživatelská dokumentace | 2 | ... | ANO
 | **Celkem** | **36** (_47_) | 16 |
 
