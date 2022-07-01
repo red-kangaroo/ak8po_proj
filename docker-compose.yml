@@ -52,6 +52,10 @@ services:
   # Frontend
   # ----------------------------
   frontend:
+    # Superuser:
+    #  u: root
+    #  e: root@django.cz
+    #  p: Wochenende
     image: finduraf/ak8po_frontend:dev
     build: ./frontend
     container_name: frontend
@@ -59,7 +63,7 @@ services:
     ports:
       - "8081:8000"
     environment:
-      POSTGRES_NAME: 'postgres'
+      POSTGRES_NAME: 'weather'
       POSTGRES_USER: 'root'
       POSTGRES_PASSWORD: 'ak8po'
     depends_on:
