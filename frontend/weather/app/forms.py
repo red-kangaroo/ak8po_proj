@@ -1,13 +1,13 @@
 from django import forms
 
 CHART_CHOICES = (
-    ('#1', 'Bar Chart'),
-    ('#2', 'Pie Chart'),
-    ('#3', 'Line Chart')
+    ('bar', 'Bar Chart'),
+    ('pie', 'Pie Chart'),
+    ('line', 'Line Chart')
 )
 RESULTS_CHOICES = (
-    ('#1', 'Data Source'),
-    ('#2', 'Forecast Time')
+    ('datasource', 'Data Source'),
+    ('forecast_time', 'Forecast Time')
 )
 
 
@@ -15,4 +15,4 @@ class WeatherSearchForm(forms.Form):
     date_from = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     chart_type = forms.ChoiceField(choices=CHART_CHOICES)
-    results_by = forms.ChoiceField(choices=RESULTS_CHOICES)
+    order_by = forms.ChoiceField(choices=RESULTS_CHOICES)

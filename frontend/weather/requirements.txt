@@ -1,4 +1,6 @@
 #gunicorn
 Django==4.0.5
 django-crispy-forms==1.14.0
+matplotlib==3.5.2
+pandas==1.4.3
 psycopg2-binary==2.9.3

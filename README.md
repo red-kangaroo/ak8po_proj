@@ -26,6 +26,7 @@ vývojář moci jednodušeji rozhodnout, který zdroj meteorologických dat bude
 * Python
   * SQLAlchemy (interface pro připojení k databázi)
   * Django (frontend framework)
+  * matplotlib (vizualizační knihovna)
 * Docker (kontejnerizační platforma pro nasazení)
 * PostgreSQL (relační databáze)
 * [Grafana](https://grafana.com/) (mockup frontendu pro ověření konceptu)
@@ -46,10 +47,10 @@ taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty ap
 | Databáze - Struktura a zprovoznění | 3 | 1,5 |
 | Backend - Připojení k databázi | 1 | 1,5 |
 | Backend - Data scraping | 5 | 5 |
-| Backend - Endpoint pro frontend | 1 | ... |
+| Backend - Endpoint pro frontend | 1 | - |
 | Frontend - Mockup v Grafaně | 2 | 2 |
-| Frontend - Připojení k backendu | 2 | ... |
-| Frontend - Vizualizace v grafech | 10 | ... |
+| Frontend - Připojení k backendu | 2 | - |
+| Frontend - Vizualizace v grafech | 10 | 5+ |
 | Frontend - Vizualizace na mapě | 7 | ... | ANO
 | Testy aplikace - Unit testy a debugging | 2 | 1+ |
 | Testy aplikace - Integrační a aplikační testy | 2 | ... |
@@ -60,4 +61,4 @@ taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty ap
 
 ## Otázky
 
-Jakékoli otázy a připomínky je možné směřovat do [Issues](https://github.com/red-kangaroo/ak8po_proj/issues) zde na GitHubu.
+Jakékoli otázy a připomínky je možné směřovat do [Issues](https://github.com/red-kangaroo/ak8po_proj/issues) na GitHub.
