@@ -57,7 +57,7 @@ taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty ap
 | Nasazení v cloudu | 2 | ... | ANO
 | Uživatelské konzultace | 1 | 0,5 |
 | Uživatelská dokumentace | 2 | ... | ANO
-| **Celkem** | **36** (_47_) | 16 |
+| **Celkem** | **36** (_47_) | 26+ |
 
 ## Otázky
 
