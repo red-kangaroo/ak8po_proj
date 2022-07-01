@@ -22,14 +22,13 @@ Home
         <button class="btn btn-primary mt-3" type="submit">Search</button>
     </form>
 
-    <hr>
-
-    {% if sales_df %}
-        <b>Weather Data</b>
-        {{weather_df|safe}}
-        <hr>
+    {% if weather_df %}
         <hr>
         <b>Chart</b>
         <img src="data:image/png;base64, {{chart|safe}}" alt="" id="img">
+
+        <hr>
+        <b>Weather Data</b>
+        {{weather_df|safe}}
     {% endif %}<br>
 {% endblock content %}
