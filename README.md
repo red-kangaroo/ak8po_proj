@@ -38,6 +38,9 @@ vývojář moci jednodušeji rozhodnout, který zdroj meteorologických dat bude
 Tento časový plán bude průběžně doplňován o již využitou časovou dotaci na jednotlivé činnosti. Předložený časový plán 
 taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty aplikace dokončeny v termínu nebo s časovou rezervou.
 
+Položky označené v konečné náročnosti jako `-` nebylo nakonec nutné zpracovávat, a tedy byl tento čas oproti plánu
+ušetřen.
+
 | Aktivita | Předpokládaná<br>časová náročnost<br>(hod) | Konečná<br>časová náročnost<br>(hod) | Nadpráce<br>(zbyde-li čas) |
 |----------|--------------------------------------------|--------------------------------------|---------------------------|
 | Plán požadavků a rozsahu prací | 1 | 1 |
@@ -50,14 +53,26 @@ taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty ap
 | Backend - Endpoint pro frontend | 1 | - |
 | Frontend - Mockup v Grafaně | 2 | 2 |
 | Frontend - Připojení k backendu | 2 | - |
-| Frontend - Vizualizace v grafech | 10 | 5+ |
-| Frontend - Vizualizace na mapě | 7 | ... | ANO
-| Testy aplikace - Unit testy a debugging | 2 | 1+ |
-| Testy aplikace - Integrační a aplikační testy | 2 | ... |
+| Frontend - Příprava webových stránek | 5 | 6 |
+| Frontend - Vizualizace v grafech | 5 | 3+ |
+| Frontend - Vizualizace na mapě | 10 | ... | ANO
+| Testy aplikace - Unit testy a debugging | 2 | 2+ |
+| Testy aplikace - Integrační a aplikační testy | 2 | ... | ANO
 | Nasazení v cloudu | 2 | ... | ANO
 | Uživatelské konzultace | 1 | 0,5 |
 | Uživatelská dokumentace | 2 | ... | ANO
-| **Celkem** | **36** (_47_) | 26+ |
+| Vyhodnocení projektu | 1 | ... |
+| **Celkem** | **35** (_50_) | 26+ |
+
+Plnění časového plánu jde taktéž vidět v Clockify reportu [zde](doc/report.pdf).
+
+## Webové stránky
+
+TODO
+
+## Grafana
+
+![](doc/grafana.png "Grafana")
 
 ## Otázky
 
