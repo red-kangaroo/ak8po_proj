@@ -1,4 +1,7 @@
 from django import forms
+from crispy_forms.layout import Div, Field
+from crispy_forms.helper import FormHelper, Layout
+
 
 SOURCE_CHOICES = (
     ('nmi', 'Norwegian Meteorological Institute'),
@@ -20,6 +23,14 @@ DATA_CHOICES = (
 
 
 class WeatherSearchForm(forms.Form):
+    helper = FormHelper()
+    helper.layout = Layout(
+        Div(Field('date_from'), Field('date_to'),
+            css_class='form-row'),
+        Div(Field('chart_source'), Field('chart_data'),
+            css_class='form-row'),
+    )
+
     date_from = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     chart_source = forms.MultipleChoiceField(choices=SOURCE_CHOICES, widget=forms.CheckboxSelectMultiple,
