@@ -27,15 +27,23 @@ def weather_search(request):
     if request.method == 'POST':
         date_from = request.POST.get('date_from')
         date_to = request.POST.get('date_to')
-        chart_source = request.POST.get('chart_source')
-        chart_data = request.POST.get('chart_data')
+
+        if search_form.is_valid():
+            chart_source = search_form.cleaned_data.get('chart_source')
+            chart_data = search_form.cleaned_data.get('chart_data')
+        else:
+            chart_source = list()
+            chart_data = list()
 
         weather_query = WeatherData.objects.filter(forecast_time__date__lte=date_to,
-                                                   forecast_time__date__gte=date_from)
+                                                   forecast_time__date__gte=date_from,
+                                                   datasource__in=chart_source)
+        # messages.debug(request, f"Chart sources: {chart_source}")
+        # messages.debug(request, f"Chart data: {chart_data}")
 
         if len(weather_query) > 0:
             weather_df = pandas.DataFrame(weather_query.values())
-            chart, msg = get_chart(weather_df, chart_source, chart_data)
+            chart, msg = get_chart(weather_df, chart_data)
 
             weather_df.rename({
                 'forecast_time': 'Date & Time',

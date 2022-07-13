@@ -23,17 +23,20 @@ DATA_CHOICES = (
 
 
 class WeatherSearchForm(forms.Form):
-    helper = FormHelper()
-    helper.layout = Layout(
-        Div(Field('date_from'), Field('date_to'),
-            css_class='form-row'),
-        Div(Field('chart_source'), Field('chart_data'),
-            css_class='form-row'),
-    )
-
     date_from = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     chart_source = forms.MultipleChoiceField(choices=SOURCE_CHOICES, widget=forms.CheckboxSelectMultiple,
-                                             initial=[c[0] for c in SOURCE_CHOICES])
+                                             initial=[c[0] for c in SOURCE_CHOICES], required=False)
     chart_data = forms.MultipleChoiceField(choices=DATA_CHOICES, widget=forms.CheckboxSelectMultiple,
-                                           initial=[c[0] for c in DATA_CHOICES])
+                                           initial=[c[0] for c in DATA_CHOICES], required=False)
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #
+    #     self.helper = FormHelper()
+    #     self.helper.layout = Layout(
+    #         Div(Field('date_from'), Field('date_to'),
+    #             css_class='form-row'),
+    #         Div(Field('chart_source'), Field('chart_data'),
+    #             css_class='form-row'),
+    #     )
