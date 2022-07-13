@@ -68,9 +68,22 @@ Plnění časového plánu jde taktéž vidět v Clockify reportu [zde](doc/repo
 
 ## Spuštění aplikace
 
-Weather Mapper je rozdělený do několika kontejnerizovaných mikroslužeb, které 
+Weather Mapper je rozdělený do několika kontejnerizovaných mikroslužeb, které je potřeba spustit v Docker prostředí.
+Následně jde již pracovat s webovými rozhraními aplikace v libovolném prohlížeči.
 
-TODO
+Z kořenového adresáře projektu jde aplikace sestavit a spustit pomocí:
+
+```
+docker-compose up --build -d
+```
+
+Jednotlivá rozhraní aplikace jsou pak dostupná na portu (při defaultní adrese `localhost`):
+
+| Rozhraní | Port | Popis |
+|----------|------|-------|
+| Django   | `8081` | Vizualizace vybraných dat.
+| Grafana  | `5052` | Vizualizace časových řad v grafech.
+| pgAdmin  | `5050` | Přímý dohled nad databází. Uživatelský přístup není doporučen.
 
 ## Webové stránky
 
