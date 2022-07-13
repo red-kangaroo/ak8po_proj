@@ -18,6 +18,9 @@ AK8PO: Request handling
 """
 
 
+# ==============================================================================
+# Requests
+# ==============================================================================
 def weather_search(request):
     chart = None
     html_table = None
@@ -43,7 +46,8 @@ def weather_search(request):
 
         if len(weather_query) > 0:
             weather_df = pandas.DataFrame(weather_query.values())
-            chart, msg = get_chart(weather_df, chart_data)
+            chart, msg = get_chart(weather_df, chart_data,
+                                   date_from=date_from, date_to=date_to)
 
             weather_df.rename({
                 'forecast_time': 'Date & Time',

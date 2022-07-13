@@ -1,7 +1,16 @@
+# !/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import datetime
 from django import forms
 from crispy_forms.layout import Div, Field
 from crispy_forms.helper import FormHelper, Layout
 
+"""
+AK8PO: Web forms
+
+@author: Filip Findura
+"""
 
 SOURCE_CHOICES = (
     ('nmi', 'Norwegian Meteorological Institute'),
@@ -20,15 +29,20 @@ DATA_CHOICES = (
     ('chance_rain', 'Chance of Rain'),
     ('chance_snow', 'Chance of Snow'),
 )
+DATA_DEFAULT = ['temperature', 'humidity', 'precipitations']
+DATE_NOW = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d")
 
 
+# ==============================================================================
+# Forms
+# ==============================================================================
 class WeatherSearchForm(forms.Form):
-    date_from = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    date_from = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=DATE_NOW)
+    date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=DATE_NOW)
     chart_source = forms.MultipleChoiceField(choices=SOURCE_CHOICES, widget=forms.CheckboxSelectMultiple,
                                              initial=[c[0] for c in SOURCE_CHOICES], required=False)
     chart_data = forms.MultipleChoiceField(choices=DATA_CHOICES, widget=forms.CheckboxSelectMultiple,
-                                           initial=[c[0] for c in DATA_CHOICES], required=False)
+                                           initial=DATA_DEFAULT, required=False)
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
