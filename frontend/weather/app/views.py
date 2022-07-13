@@ -49,6 +49,7 @@ def weather_search(request):
             chart, msg = get_chart(weather_df, chart_data,
                                    date_from=date_from, date_to=date_to)
 
+            weather_df.sort_values(['forecast_time', 'datasource'], ascending=True, inplace=True)
             weather_df.rename({
                 'forecast_time': 'Date & Time',
                 'datasource': 'Data Source',

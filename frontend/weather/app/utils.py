@@ -66,8 +66,8 @@ def get_chart(data, cols, **kwargs):
         # else:
         #     msg.append("Chart typ not found.")
 
-        data.set_index('forecast_time', inplace=True)
-        d = data.groupby('datasource', as_index=False)
+        d = data.set_index('forecast_time')
+        d = d.groupby('datasource', as_index=False)
 
         for i, g in enumerate(cols):
             # if i == len(cols) - 1:
