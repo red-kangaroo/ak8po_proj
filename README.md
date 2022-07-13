@@ -60,11 +60,17 @@ ušetřen.
 | Testy aplikace - Integrační a aplikační testy | 2 | ... | ANO
 | Nasazení v cloudu | 2 | ... | ANO
 | Uživatelské konzultace | 1 | 0,5 |
-| Uživatelská dokumentace | 2 | ... | ANO
+| Uživatelská dokumentace | 2 | 0,5 | ANO
 | Vyhodnocení projektu | 1 | ... |
 | **Celkem** | **35** (_50_) | 26+ |
 
 Plnění časového plánu jde taktéž vidět v Clockify reportu [zde](doc/report.pdf).
+
+## Spuštění aplikace
+
+Weather Mapper je rozdělený do několika kontejnerizovaných mikroslužeb, které 
+
+TODO
 
 ## Webové stránky
 

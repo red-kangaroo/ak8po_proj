@@ -23,23 +23,25 @@ def get_graph():
     return graph
 
 
-def get_chart(chart_type, data, order_by, **kwargs):
+def get_chart(data, sources, cols, **kwargs):
     # TODO
     msg = list()
     pyplot.switch_backend('AGG')
     fig = pyplot.figure(figsize=(10, 4))
 
     try:
-        d = data.groupby(order_by, as_index=False)  # ['temperature'].agg('sum')
+        raise NotImplementedError
 
-        if chart_type == 'bar':
-            pyplot.bar(d[order_by], d['temperature'])
-        elif chart_type == 'pie':
-            pyplot.pie(data=d, x='temperature', labels=d[order_by])
-        elif chart_type == 'line':
-            pyplot.plot(d[order_by], d['temperature'], color='gray', marker='o', linestyle='dashed')
-        else:
-            msg.append("Chart typ not found.")
+        # d = data.groupby(order_by, as_index=False)  # ['temperature'].agg('sum')
+        #
+        # if chart_type == 'bar':
+        #     pyplot.bar(d[order_by], d['temperature'])
+        # elif chart_type == 'pie':
+        #     pyplot.pie(data=d, x='temperature', labels=d[order_by])
+        # elif chart_type == 'line':
+        #     pyplot.plot(d[order_by], d['temperature'], color='gray', marker='o', linestyle='dashed')
+        # else:
+        #     msg.append("Chart typ not found.")
     except Exception as e:
         msg.append(f"Failed to plot charts: {e}")
 

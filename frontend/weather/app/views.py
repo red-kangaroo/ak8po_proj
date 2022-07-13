@@ -27,17 +27,16 @@ def weather_search(request):
     if request.method == 'POST':
         date_from = request.POST.get('date_from')
         date_to = request.POST.get('date_to')
-        chart_type = request.POST.get('chart_type')
-        order_by = request.POST.get('order_by')
+        chart_source = request.POST.get('chart_source')
+        chart_data = request.POST.get('chart_data')
 
         weather_query = WeatherData.objects.filter(forecast_time__date__lte=date_to,
                                                    forecast_time__date__gte=date_from)
 
         if len(weather_query) > 0:
             weather_df = pandas.DataFrame(weather_query.values())
-            chart, msg = get_chart(chart_type, weather_df, order_by)
+            chart, msg = get_chart(weather_df, chart_source, chart_data)
 
-            # weather_df['created'] = weather_df['created'].apply(lambda x: x.strftime('%d/%m/%Y'))
             weather_df.rename({
                 'forecast_time': 'Date & Time',
                 'datasource': 'Data Source',
