@@ -41,7 +41,6 @@ def get_graph():
 
 
 def get_chart(data, cols, **kwargs):
-    # TODO
     msg = list()
     pyplot.switch_backend('AGG')
     fig, axs = pyplot.subplots(len(cols), figsize=(10, 4 * len(cols)))
@@ -55,32 +54,27 @@ def get_chart(data, cols, **kwargs):
         fig.suptitle("Weather results")
 
     try:
-        # d = data.groupby(order_by, as_index=False)  # ['temperature'].agg('sum')
-        #
-        # if chart_type == 'bar':
-        #     pyplot.bar(d[order_by], d['temperature'])
-        # elif chart_type == 'pie':
-        #     pyplot.pie(data=d, x='temperature', labels=d[order_by])
-        # elif chart_type == 'line':
-        #     pyplot.plot(d[order_by], d['temperature'], color='gray', marker='o', linestyle='dashed')
-        # else:
-        #     msg.append("Chart typ not found.")
-
         d = data.set_index('forecast_time')
         d = d.groupby('datasource', as_index=False)
 
         for i, g in enumerate(cols):
+            if len(cols) > 1:
+                ax = axs[i]
+            else:
+                ax = axs
+
+            # TODO legend
             # if i == len(cols) - 1:
             #     handles, labels = axs[i].get_legend_handles_labels()
             #     fig.legend(handles, labels, loc='upper center')
 
-            pyplot.sca(axs[i])
+            pyplot.sca(ax)
             d[g].plot()
 
             l, u = LABELS.get(g, EMPTY_LABEL)
             pyplot.xlabel('')
             pyplot.ylabel(l)
-            axs[i].get_yaxis().set_major_formatter(FormatStrFormatter(f'%d {u}'))
+            ax.get_yaxis().set_major_formatter(FormatStrFormatter(f'%d {u}'))
 
     except Exception as e:
         msg.append(f"Failed to plot charts: {e}")

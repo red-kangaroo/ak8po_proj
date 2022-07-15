@@ -25,7 +25,7 @@ def weather_search(request):
     chart = None
     html_table = None
     search_form = WeatherSearchForm(request.POST or None)
-    # messages.set_level(request, messages.DEBUG)  # TODO
+    # messages.set_level(request, messages.DEBUG)
 
     if request.method == 'POST':
         date_from = request.POST.get('date_from')
@@ -44,7 +44,7 @@ def weather_search(request):
         # messages.debug(request, f"Chart sources: {chart_source}")
         # messages.debug(request, f"Chart data: {chart_data}")
 
-        if len(weather_query) > 0:
+        if len(weather_query) > 0 and len(chart_data) > 0:
             weather_df = pandas.DataFrame(weather_query.values())
             chart, msg = get_chart(weather_df, chart_data,
                                    date_from=date_from, date_to=date_to)
