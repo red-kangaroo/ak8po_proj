@@ -24,11 +24,11 @@ vývojář moci jednodušeji rozhodnout, který zdroj meteorologických dat bude
 ## Technologie
 
 * Python
-  * SQLAlchemy (interface pro připojení k databázi)
-  * Django (frontend framework)
-  * matplotlib (vizualizační knihovna)
-* Docker (kontejnerizační platforma pro nasazení)
-* PostgreSQL (relační databáze)
+  * [SQLAlchemy](https://www.sqlalchemy.org/) (interface pro připojení k databázi)
+  * [Django](https://www.djangoproject.com/) (frontend framework)
+  * [matplotlib](https://matplotlib.org/) (vizualizační knihovna)
+* [Docker](https://www.docker.com/) (kontejnerizační platforma pro nasazení)
+* [PostgreSQL](https://www.postgresql.org/) (relační databáze)
 * [Grafana](https://grafana.com/) (mockup frontendu pro ověření konceptu)
 * [OpenStreetMap](https://www.openstreetmap.org/) (vizualizace v mapě)
 * [Clockify](https://app.clockify.me/) (vyhodnocení časové náročnosti plán vs skutečnost)
@@ -37,6 +37,7 @@ vývojář moci jednodušeji rozhodnout, který zdroj meteorologických dat bude
 
 Tento časový plán bude průběžně doplňován o již využitou časovou dotaci na jednotlivé činnosti. Předložený časový plán 
 taktéž počítá s možností nadprací, pokud budou jednotlivé komponenty aplikace dokončeny v termínu nebo s časovou rezervou.
+Celková časová náročnost je tak uvedena **bez nadprací** a _s nadprácemi_.
 
 Položky označené v konečné náročnosti jako `-` nebylo nakonec nutné zpracovávat, a tedy byl tento čas oproti plánu
 ušetřen.
@@ -53,23 +54,25 @@ ušetřen.
 | Backend - Endpoint pro frontend | 1 | - |
 | Frontend - Mockup v Grafaně | 2 | 2 |
 | Frontend - Připojení k backendu | 2 | - |
-| Frontend - Příprava webových stránek | 5 | 6 |
-| Frontend - Vizualizace v grafech | 5 | 3+ |
+| Frontend - Příprava webových stránek | 5 | **7,5** |
+| Frontend - Vizualizace v grafech | 5 | **10,5** |
 | Frontend - Vizualizace na mapě | 10 | ... | ANO
-| Testy aplikace - Unit testy a debugging | 2 | 2+ |
+| Testy aplikace - Unit testy a debugging | 2 | **5,5** |
 | Testy aplikace - Integrační a aplikační testy | 2 | ... | ANO
 | Nasazení v cloudu | 2 | ... | ANO
 | Uživatelské konzultace | 1 | 0,5 |
-| Uživatelská dokumentace | 2 | 0,5 | ANO
+| Uživatelská dokumentace | 2 | 1 | ANO
 | Vyhodnocení projektu | 1 | ... |
-| **Celkem** | **35** (_50_) | 26+ |
+| **Celkem** | **35** (_50_) | 40+ | 1
 
 Plnění časového plánu jde taktéž vidět v Clockify reportu [zde](doc/report.pdf).
 
 ## Spuštění aplikace
 
 Weather Mapper je rozdělený do několika kontejnerizovaných mikroslužeb, které je potřeba spustit v Docker prostředí.
-Následně jde již pracovat s webovými rozhraními aplikace v libovolném prohlížeči.
+Následně jde již pracovat s webovými rozhraními aplikace v libovolném prohlížeči. Pro development použití je možné
+mít Docker nainstalovaný jako [Docker Desktop](https://www.docker.com/products/docker-desktop/) a pak stačí stáhnout si
+tento projekt z GitHub.
 
 Z kořenového adresáře projektu jde aplikace sestavit a spustit pomocí:
 
@@ -85,13 +88,37 @@ Jednotlivá rozhraní aplikace jsou pak dostupná na portu (při defaultní adre
 | Grafana  | `5052` | Vizualizace časových řad v grafech.
 | pgAdmin  | `5050` | Přímý dohled nad databází. Uživatelský přístup není doporučen.
 
-## Webové stránky
+Obdobným způsobem jde aplikaci spustit na libovolném serveru s Docker prostředím, a po přidání ingress mohou být
+jednotlivé služby dostupné ze samostatných URL namísto portů.
 
-TODO
+### Webové rozhraní
 
-## Grafana
+![](doc/web.png "Webové rozhraní")
+
+### Grafana
 
 ![](doc/grafana.png "Grafana")
+
+## Budoucí funkce
+
+* Více lokalit.
+  * Možnost přidávat lokality od uživatele. Možná přes lon/lat souřadnice? 
+* Časová řada pro každou předpověď (zdroj a hodina), zobrazující změny na předpovědi v průběhu času.
+* Statistické zpracování přesnosti předpovědí.
+* Vizualizace pouze v Grafaně, vyhodnocení dat v Django.
+* Autorizace a anutentikace uživatelů.
+
+## Problémy
+
+**pgAdmin připojení k databázi**
+Pokud po přihlášení do pgAdmin není možné otevřít spojení s PostreSQL databází, je možné že došlo k restartu kontejneru
+a Docker nedokázal novému kontejneru přiřadit stejnou IP. V tom případě je nutné zkontrolovat IP databáze:
+
+```
+docker inspect postgres
+```
+
+S novou IP je pak možné se normálně připojit.
 
 ## Otázky
 
