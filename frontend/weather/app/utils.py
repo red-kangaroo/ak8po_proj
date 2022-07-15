@@ -24,6 +24,12 @@ LABELS = {  # Percent signs need to be doubled because ticker uses old-style rep
     'chance_snow': ('Chance of Snow', '%%'),
 }
 EMPTY_LABEL = ('', '')
+LEGEND = {
+    'nmi': 'Norwegian Meteorological Institute',
+    'owm': 'Open Weather Map',
+    'weatherapi': 'Weather API',
+    'weatherstack': 'Weather Stack',
+}
 
 
 # ==============================================================================
@@ -53,8 +59,14 @@ def get_chart(data, cols, **kwargs):
     else:
         fig.suptitle("Weather results")
 
+    # handles, labels = axs[i].get_legend_handles_labels()
+    # fig.legend(handles, labels, loc='upper center')
+
     try:
         d = data.set_index('forecast_time')
+        for (s, l) in LEGEND.items():
+            # TODO: Renaming the legend only would be better, but how?
+            d.replace(s, l, inplace=True)
         d = d.groupby('datasource', as_index=False)
 
         for i, g in enumerate(cols):
@@ -63,13 +75,8 @@ def get_chart(data, cols, **kwargs):
             else:
                 ax = axs
 
-            # TODO legend
-            # if i == len(cols) - 1:
-            #     handles, labels = axs[i].get_legend_handles_labels()
-            #     fig.legend(handles, labels, loc='upper center')
-
             pyplot.sca(ax)
-            d[g].plot()
+            d[g].plot(legend=bool(i == 0))
 
             l, u = LABELS.get(g, EMPTY_LABEL)
             pyplot.xlabel('')
