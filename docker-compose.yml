@@ -88,7 +88,7 @@ services:
   # Backend
   # ----------------------------
   backend:
-    image: finduraf/ak8po_backend:dev
+    image: finduraf/ak8po_backend:0.2.2
     build: ./backend
     container_name: backend
     restart: on-failure

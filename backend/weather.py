@@ -7,7 +7,6 @@ from pandas import DataFrame
 import requests
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy import Column, TIMESTAMP, VARCHAR, REAL
 from time import sleep
 
 from helper import set_logging, degrees_to_direction, insert_on_duplicate, ROOT
@@ -73,23 +72,6 @@ MPS_TO_KPH = 3.6
 # ==============================================================================
 # Database
 # ==============================================================================
-# class WeatherTable(Base):
-#     # Tabulka se souhrnnymi daty za jednotlive roky
-#     __tablename__ = DB_TABLE
-#
-#     forecast_time = Column(TIMESTAMP, nullable=False)
-#     datasource = Column(VARCHAR(20), nullable=False)
-#     temperature = Column(REAL)
-#     humidity = Column(REAL)
-#     cloud_fraction = Column(REAL)
-#     wind_speed = Column(REAL)
-#     wind_dir = Column(VARCHAR(4))
-#     precipitations = Column(REAL)
-#     pressure = Column(REAL)
-#     chance_rain = Column(REAL)
-#     chance_snow = Column(REAL)
-
-
 def open_session():
     global SQL, DB_ENG
 
